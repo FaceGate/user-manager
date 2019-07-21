@@ -9,6 +9,8 @@ from functools import partial
 from nameko.web.handlers import HttpRequestHandler
 from nameko.extensions import register_entrypoint
 
+from user_manager.exceptions import GroupNotFoundError
+
 
 class CorsHttpRequestHandler(HttpRequestHandler):
     """ Overrides `response_from_exception` so we can customize error handling.
@@ -17,6 +19,7 @@ class CorsHttpRequestHandler(HttpRequestHandler):
     mapped_errors = {
         BadRequest: (400, "BAD_REQUEST"),
         ValidationError: (400, "VALIDATION_ERROR"),
+        GroupNotFoundError: (400, "GROUP_NOT_FOUND_ERROR"),
     }
 
     def response_from_exception(self, exc):

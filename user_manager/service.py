@@ -7,6 +7,7 @@ from nameko_sqlalchemy import Database
 from werkzeug.wrappers import Response
 
 from user_manager.entrypoints import http
+from user_manager.exceptions import GroupNotFoundError
 from user_manager.models import DeclarativeBase, User, Group, ProfilePicture
 from user_manager.schema import CreateUserSchema
 
@@ -66,7 +67,7 @@ class UserManagerService:
             for group_id in group_ids:
                 group = sess.query(Group).filter(Group.id == group_id).first()
                 if not group:
-                    raise ValueError(f"Group id {group_id} doesn't exists")
+                    raise GroupNotFoundError(f"Group id {group_id} doesn't exists")
                 user.groups.append(group)
             sess.add(user)
             sess.flush()
