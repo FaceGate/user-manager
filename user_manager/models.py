@@ -45,6 +45,21 @@ class User(DeclarativeBase):
     expiration_date = Column(DateTime, nullable=False)
     is_activated = Column(Boolean, default=True, nullable=False)
     groups = relationship("Group", secondary=group_user_table, back_populates="users")
+    profile_pictures = relationship("ProfilePicture", back_populates="user")
+
+    def as_dict(self):
+        return {
+            "id": self.id,
+            "first_name": self.first_name,
+            "last_name": self.last_name,
+            "expiration_date": self.expiration_date.isoformat(),
+            "is_activated": self.is_activated,
+            "profile_pictures": [
+                {"id": profile_picture.id, "link": profile_picture.picture_url}
+                for profile_picture in self.profile_pictures
+            ],
+            "groups": [{"id": group.id, "name": group.name} for group in self.groups],
+        }
 
 
 class ProfilePicture(DeclarativeBase):
@@ -53,6 +68,7 @@ class ProfilePicture(DeclarativeBase):
     id = Column(Integer, primary_key=True, autoincrement=True)
     picture_url = Column(String, nullable=False)
     user_id = Column(Integer, ForeignKey(User.id), nullable=False)
+    user = relationship("User", back_populates="profile_pictures")
 
 
 group_area_table = Table(

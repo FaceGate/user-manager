@@ -23,12 +23,7 @@ class UserManager:
             user = sess.query(User).filter(User.id == user_id).first()
             if not user:
                 raise ValueError(f"User id {user_id} doesn't exists")
-            return {
-                "id": user.id,
-                "first_name": user.first_name,
-                "last_name": user.last_name,
-                "expiration_date": user.expiration_date.isoformat(),
-            }
+            return user.as_dict()
 
 
 class UserManagerService:
@@ -76,14 +71,13 @@ class UserManagerService:
                 sess.add(profile_picture)
 
         # TODO: change to event pubsub
-        self.rekognizer.enroll_user(
-            user_id=user.id, image_urls=profile_pictures
-        )
+        self.rekognizer.enroll_user(user_id=user.id, image_urls=profile_pictures)
 
-        # TODO: add profile pictures
-        return {
-            "id": user.id,
-            "first_name": user.first_name,
-            "last_name": user.last_name,
-            "expiration_date": user.expiration_date.isoformat(),
-        }
+        return user.as_dict()
+
+    @http("GET", "/users")
+    def get_users(self, request):
+        users = self.db.session.query(User).all()
+        users = [user.as_dict() for user in users]
+
+        return Response(json.dumps(users), mimetype="application/json")
