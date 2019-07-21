@@ -58,7 +58,7 @@ class User(DeclarativeBase):
                 {"id": profile_picture.id, "link": profile_picture.picture_url}
                 for profile_picture in self.profile_pictures
             ],
-            "groups": [{"id": group.id, "name": group.name} for group in self.groups],
+            "group_ids": [group.id for group in self.groups],
         }
 
 
