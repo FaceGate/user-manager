@@ -109,3 +109,10 @@ class Area(DeclarativeBase):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String, nullable=False)
     groups = relationship("Group", secondary=group_area_table, back_populates="areas")
+
+    def as_dict(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "groups": [{"id": group.id, "name": group.name} for group in self.groups],
+        }

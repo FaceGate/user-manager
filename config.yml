@@ -1,6 +1,5 @@
 DB_URIS:
     "user_manager_http:Base": ${DB_URI}
     "user_manager:Base": ${DB_URI}
-    "group_http:Base": ${DB_URI}
 
 AMQP_URI: ${BROKER_URI}

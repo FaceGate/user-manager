@@ -8,7 +8,7 @@ from werkzeug.wrappers import Response
 
 from user_manager.entrypoints import http
 from user_manager.exceptions import GroupNotFoundError, UserNotFoundError
-from user_manager.models import DeclarativeBase, User, Group, ProfilePicture
+from user_manager.models import DeclarativeBase, User, Group, ProfilePicture, Area
 from user_manager.schema import CreateUserSchema
 
 
@@ -90,12 +90,6 @@ class UserManagerService:
 
         return Response(json.dumps(user.as_dict()), mimetype="application/json")
 
-
-class GroupService:
-    name = "group_http"
-
-    db = Database(DeclarativeBase)
-
     @http("GET", "/groups")
     def get_groups(self, request):
         groups = self.db.session.query(Group).all()
@@ -110,3 +104,10 @@ class GroupService:
             raise GroupNotFoundError(f"Group {group_id} doesn't exist")
 
         return Response(json.dumps(group.as_dict()), mimetype="application/json")
+
+    @http("GET", "/areas")
+    def get_areas(self, request):
+        areas = self.db.session.query(Area).all()
+        areas = [area.as_dict() for area in areas]
+
+        return Response(json.dumps(areas), mimetype="application/json")
