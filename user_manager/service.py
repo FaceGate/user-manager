@@ -89,3 +89,24 @@ class UserManagerService:
             raise UserNotFoundError(f"User {user_id} doesn't exist")
 
         return Response(json.dumps(user.as_dict()), mimetype="application/json")
+
+
+class GroupService:
+    name = "group_http"
+
+    db = Database(DeclarativeBase)
+
+    @http("GET", "/groups")
+    def get_groups(self, request):
+        groups = self.db.session.query(Group).all()
+        groups = [group.as_dict() for group in groups]
+
+        return Response(json.dumps(groups), mimetype="application/json")
+
+    @http("GET", "/groups/<int:group_id>")
+    def get_group(self, request, group_id):
+        group = self.db.session.query(Group).filter(Group.id == group_id).first()
+        if not group:
+            raise GroupNotFoundError(f"Group {group_id} doesn't exist")
+
+        return Response(json.dumps(group.as_dict()), mimetype="application/json")

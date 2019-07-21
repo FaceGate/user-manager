@@ -19,7 +19,7 @@ class CorsHttpRequestHandler(HttpRequestHandler):
     mapped_errors = {
         BadRequest: (400, "BAD_REQUEST"),
         ValidationError: (400, "VALIDATION_ERROR"),
-        GroupNotFoundError: (400, "GROUP_NOT_FOUND_ERROR"),
+        GroupNotFoundError: (404, "GROUP_NOT_FOUND_ERROR"),
         UserNotFoundError: (404, "USER_NOT_FOUND_ERROR"),
     }
 

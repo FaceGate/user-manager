@@ -87,6 +87,21 @@ class Group(DeclarativeBase):
     areas = relationship("Area", secondary=group_area_table, back_populates="groups")
     users = relationship("User", secondary=group_user_table, back_populates="groups")
 
+    def as_dict(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "users": [
+                {
+                    "id": user.id,
+                    "first_name": user.first_name,
+                    "last_name": user.last_name,
+                }
+                for user in self.users
+            ],
+            "areas": [{"id": area.id, "name": area.name} for area in self.areas],
+        }
+
 
 class Area(DeclarativeBase):
     __tablename__ = "areas"
