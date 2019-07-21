@@ -9,7 +9,7 @@ from functools import partial
 from nameko.web.handlers import HttpRequestHandler
 from nameko.extensions import register_entrypoint
 
-from user_manager.exceptions import GroupNotFoundError
+from user_manager.exceptions import GroupNotFoundError, UserNotFoundError
 
 
 class CorsHttpRequestHandler(HttpRequestHandler):
@@ -20,6 +20,7 @@ class CorsHttpRequestHandler(HttpRequestHandler):
         BadRequest: (400, "BAD_REQUEST"),
         ValidationError: (400, "VALIDATION_ERROR"),
         GroupNotFoundError: (400, "GROUP_NOT_FOUND_ERROR"),
+        UserNotFoundError: (404, "USER_NOT_FOUND_ERROR"),
     }
 
     def response_from_exception(self, exc):

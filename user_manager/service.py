@@ -7,7 +7,7 @@ from nameko_sqlalchemy import Database
 from werkzeug.wrappers import Response
 
 from user_manager.entrypoints import http
-from user_manager.exceptions import GroupNotFoundError
+from user_manager.exceptions import GroupNotFoundError, UserNotFoundError
 from user_manager.models import DeclarativeBase, User, Group, ProfilePicture
 from user_manager.schema import CreateUserSchema
 
@@ -81,3 +81,11 @@ class UserManagerService:
         users = [user.as_dict() for user in users]
 
         return Response(json.dumps(users), mimetype="application/json")
+
+    @http("GET", "/users/<int:user_id>")
+    def get_user(self, request, user_id):
+        user = self.db.session.query(User).filter(User.id == user_id).first()
+        if not user:
+            raise UserNotFoundError(f"User {user_id} doesn't exist")
+
+        return Response(json.dumps(user.as_dict()), mimetype="application/json")
