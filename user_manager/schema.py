@@ -7,3 +7,8 @@ class CreateUserSchema(Schema):
     profile_pictures = fields.List(fields.Url, required=True)
     group_ids = fields.List(fields.Int, required=True)
     expiration_date = fields.Date(required=True)
+
+
+class CreateGroupSchema(Schema):
+    name = fields.String(required=True)
+    area_ids = fields.List(fields.Int, required=True)

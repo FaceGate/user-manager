@@ -7,9 +7,13 @@ from nameko_sqlalchemy import Database
 from werkzeug.wrappers import Response
 
 from user_manager.entrypoints import http
-from user_manager.exceptions import GroupNotFoundError, UserNotFoundError
+from user_manager.exceptions import (
+    GroupNotFoundError,
+    UserNotFoundError,
+    AreaNotFoundError,
+)
 from user_manager.models import DeclarativeBase, User, Group, ProfilePicture, Area
-from user_manager.schema import CreateUserSchema
+from user_manager.schema import CreateUserSchema, CreateGroupSchema
 
 
 class UserManager:
@@ -111,3 +115,28 @@ class UserManagerService:
         areas = [area.as_dict() for area in areas]
 
         return Response(json.dumps(areas), mimetype="application/json")
+
+    @http("POST", "/groups", expected_exceptions=(ValidationError, BadRequest))
+    def create_group(self, request):
+        schema = CreateGroupSchema(strict=True)
+
+        try:
+            group_data = schema.loads(request.get_data(as_text=True)).data
+        except ValueError as exc:
+            raise BadRequest("Invalid json: {}".format(exc))
+
+        group_result = self._create_group(group_data["name"], group_data["area_ids"])
+
+        return Response(json.dumps(group_result), mimetype="application/json")
+
+    def _create_group(self, name, area_ids):
+        group = Group(name=name)
+        with self.db.get_session() as sess:
+            for area_id in area_ids:
+                area = sess.query(Area).filter(Area.id == area_id).first()
+                if not area:
+                    raise AreaNotFoundError(f"Area id {area_id} doesn't exists")
+                group.areas.append(area)
+            sess.add(group)
+
+        return group.as_dict()

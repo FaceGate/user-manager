@@ -4,3 +4,7 @@ class GroupNotFoundError(Exception):
 
 class UserNotFoundError(Exception):
     pass
+
+
+class AreaNotFoundError(Exception):
+    pass
